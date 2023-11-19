@@ -1,8 +1,10 @@
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect } from "react";
 import ReactCrop from "react-image-crop";
 import { useDropzone } from "react-dropzone";
-import ImageCropper from "./components/ImageCropper";
+import "react-image-crop/dist/ReactCrop.css";
+import "./App.css";
 
+/*
 const thumbsContainer = {
   display: "flex",
   flexDirection: "row",
@@ -37,19 +39,21 @@ const img = {
   height: "100%",
 };
 
-const thumbButton = {
+const thumb-button = {
   position: "absolute",
   right: 10,
   bottom: 10,
 };
+*/
 
 function App() {
   const [files, setFiles] = useState([]);
-  const [crop, setCrop] = useState({ aspect: 4 / 3 });
-  const imgRef = useRef(null);
+  const [crop, setCrop] = useState();
   const [editImage, setEditImage] = useState(false);
 
   const [selectedImage, setSelectedImage] = useState({ current: null });
+
+  const [croppedImageUrl, setcroppedImageUrl] = useState(null);
 
   const { getRootProps, getInputProps } = useDropzone({
     accept: "image/*",
@@ -65,24 +69,24 @@ function App() {
   });
   const onEditClick = (img) => {
     console.log(img);
-    selectedImage.current = img;
+    setSelectedImage({ current: img });
     setEditImage(true);
   };
 
   const cancelEdit = () => {
     selectedImage.current = null;
-    setCrop({ aspect: 4 / 3 });
+    setCrop();
     setEditImage(false);
   };
 
-  const thumbs = files.map((file, index) => (
-    <div style={thumb} key={file.name}>
-      <div style={thumbInner}>
-        <img src={file.preview} style={img} alt="" />
+  const thumbs = files.map((file) => (
+    <div className="thumb" key={file.name}>
+      <div className="thumb-inner">
+        <img src={file.preview} className="img" alt="" />
       </div>
 
       <button
-        style={thumbButton}
+        className="thumb-button"
         onClick={() => {
           onEditClick(file.preview);
         }}
@@ -92,20 +96,18 @@ function App() {
     </div>
   ));
 
-  console.log(selectedImage);
-
   const onCropComplete = (crop) => {
     makeClientCrop(crop);
   };
 
   const makeClientCrop = async (crop) => {
     if (selectedImage.current && crop.width && crop.height) {
-      const croppedImageUrl = await getCroppedImg(
+      const croppedImageUrlUrl = await getCroppedImg(
         selectedImage.current,
         crop,
         "newFile.jpeg"
       );
-      console.log(croppedImageUrl);
+      setcroppedImageUrl(croppedImageUrlUrl);
     }
   };
 
@@ -115,14 +117,11 @@ function App() {
       image.src = file;
       image.onload = () => {
         const canvas = document.createElement("canvas");
-        const scaleX = image.naturalWidth / image.width;
-        const scaleY = image.naturalHeight / image.height;
-        canvas.width = crop.width;
-        canvas.height = crop.height;
+        const scaleX = image.naturalWidth / 400;
+        const scaleY = image.naturalHeight / 300;
+        canvas.width = crop.width * scaleX;
+        canvas.height = crop.height * scaleY;
         const ctx = canvas.getContext("2d");
-
-        console.log(image);
-        console.log("type of image", typeof image);
 
         ctx.drawImage(
           image,
@@ -132,8 +131,8 @@ function App() {
           crop.height * scaleY,
           0,
           0,
-          crop.width,
-          crop.height
+          canvas.width,
+          canvas.height
         );
 
         canvas.toBlob((blob) => {
@@ -165,30 +164,37 @@ function App() {
     <section className="container">
       <div {...getRootProps({ className: "dropzone" })}>
         <input {...getInputProps()} />
-        <p>Drag 'n' drop some files here, or click to select files</p>
+        <p>Drag and drop some files here, or click to select files</p>
       </div>
-      <aside style={thumbsContainer}>{thumbs}</aside>
-      <div>
-        {editImage && (
-          <>
+      <aside className="thumbs-container">{thumbs}</aside>
+      {editImage && (
+        <div className="thumbs-container">
+          <div className="thumb">
             <ReactCrop
-              // src={imgRef.current}
+              className="thumb-inner"
               crop={crop}
-              // onImageLoaded={onImageLoaded}
               onChange={(c) => setCrop(c)}
-              // onComplete={onCropComplete}
             >
-              <img src={selectedImage.current} />
+              <img className="img" src={selectedImage.current} />
             </ReactCrop>
-            <button type="button" onClick={() => onCropComplete(crop)}>
-              Done
-            </button>
-            <button type="button" onClick={cancelEdit}>
-              Cancel
-            </button>
-          </>
-        )}
-      </div>
+
+            <div className="thumb-button">
+              <button type="button" onClick={() => onCropComplete(crop)}>
+                Done
+              </button>
+              <button type="button" onClick={cancelEdit}>
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {croppedImageUrl && (
+        <div className="thumb">
+          <img src={croppedImageUrl}></img>
+        </div>
+      )}
     </section>
   );
 }

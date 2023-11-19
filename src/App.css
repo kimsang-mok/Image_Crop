@@ -1,0 +1,45 @@
+.thumbs-container {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  margin-top: 16px;
+  padding: 20px;
+}
+
+.thumb {
+  position: relative;
+  display: inline-flex;
+  justify-content: center;
+  border-radius: 2px;
+  border: 1px solid #eaeaea;
+  margin-bottom: 8px;
+  margin-right: 8px;
+  width: 400px;
+  height: 300px;
+  padding: 4px;
+  box-sizing: border-box;
+}
+
+.thumb-inner {
+  display: flex;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.img {
+  display: block;
+  width: auto;
+  height: 100%;
+}
+
+.thumb-button {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+}
+
+/* .ReactCrop__child-wrapper {
+  display: flex !important;
+  min-width: 0 !important;
+  overflow: hidden !important;
+} */
