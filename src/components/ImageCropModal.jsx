@@ -68,6 +68,24 @@ function ImageCropModal({
     };
   }, []);
 
+  const handleOutSideClick = (event) => {
+    if (
+      imgContainerRef.current &&
+      !imgContainerRef.current.contains(event.target) &&
+      !event.target.closest(".crop-button")
+    ) {
+      cancelEdit();
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener("mousedown", handleOutSideClick);
+
+    return () => {
+      document.removeEventListener("mousedown", handleOutSideClick);
+    };
+  }, [imgContainerRef]);
+
   console.log("adjusted load", crop);
 
   return (

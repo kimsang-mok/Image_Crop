@@ -47,10 +47,6 @@ function App() {
     </div>
   ));
 
-  // const onCropComplete = (crop, fullImgWidth, fullImgHeight) => {
-  //   makeClientCrop(crop, fullImgWidth, fullImgHeight);
-  // };
-
   const makeClientCrop = async (crop, fullImgWidth, fullImgHeight) => {
     if (selectedImage.current && crop.width && crop.height) {
       const croppedImageUrlUrl = await getCroppedImg(
